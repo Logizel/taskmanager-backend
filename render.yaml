@@ -1,35 +1,66 @@
-services:services:
+services:services:services:
 
-  # Backend Django API service  # Backend Django API service
+  # Backend Django API service
 
-  - type: web  - type: web
+  - type: web  # Backend Django API service  # Backend Django API service
 
-    name: vibe-backend    name: vibe-backend
+    name: vibe-backend
 
-    env: python    env: python
+    env: python  - type: web  - type: web
 
-    region: oregon    region: oregon  # Choose your preferred region
+    region: oregon
 
-    buildCommand: |    buildCommand: |
+    buildCommand: pip install -r backend/requirements.txt    name: vibe-backend    name: vibe-backend
 
-      pip install -r requirements.txt      # Install python dependencies
+    startCommand: cd backend && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn -c gunicorn.conf.py
 
-    startCommand: |      pip install -r backend/requirements.txt
+    envVars:    env: python    env: python
 
-      python manage.py collectstatic --noinput    startCommand: |
+      - key: PYTHON_VERSION
 
-      python manage.py migrate      cd backend
+        value: 3.11.4    region: oregon    region: oregon  # Choose your preferred region
 
-      gunicorn core.wsgi:application      python manage.py collectstatic --noinput
+      - key: DATABASE_URL
 
-    envVars:      python manage.py migrate
+        fromDatabase:    buildCommand: |    buildCommand: |
 
-      - key: PYTHON_VERSION      gunicorn --chdir backend core.wsgi:application
+          name: vibe-db
 
-        value: 3.11.4    envVars:
+          property: connectionString      pip install -r requirements.txt      # Install python dependencies
 
-      - key: DATABASE_URL      - key: PYTHON_VERSION
+      - key: SECRET_KEY
 
+        generateValue: true    startCommand: |      pip install -r backend/requirements.txt
+
+      - key: DEBUG
+
+        value: false      python manage.py collectstatic --noinput    startCommand: |
+
+      - key: ALLOWED_HOSTS
+
+        value: ".onrender.com"      python manage.py migrate      cd backend
+
+      - key: DJANGO_SETTINGS_MODULE
+
+        value: core.settings      gunicorn core.wsgi:application      python manage.py collectstatic --noinput
+
+      - key: PORT
+
+        value: 8000    envVars:      python manage.py migrate
+
+      - key: PYTHONPATH
+
+        value: backend      - key: PYTHON_VERSION      gunicorn --chdir backend core.wsgi:application
+
+
+
+databases:        value: 3.11.4    envVars:
+
+  - name: vibe-db
+
+    region: oregon      - key: DATABASE_URL      - key: PYTHON_VERSION
+
+    plan: free
         fromDatabase:        value: 3.11.4
 
           name: vibe-db      - key: DATABASE_URL
