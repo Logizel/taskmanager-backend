@@ -11,7 +11,7 @@ services:
       cd backend
       python manage.py collectstatic --noinput
       python manage.py migrate
-      gunicorn core.wsgi:application
+      gunicorn --chdir backend core.wsgi:application
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.4
@@ -29,6 +29,8 @@ services:
         value: core.settings
       - key: PORT
         value: 8000
+      - key: PYTHONPATH
+        value: backend
 
   # Frontend React static site
   - type: web
